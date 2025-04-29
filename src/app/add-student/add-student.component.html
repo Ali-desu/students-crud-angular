@@ -1,0 +1,113 @@
+<form [formGroup]="studentForm" (ngSubmit)="sendStudent()" >
+  <div class="add-student-form">
+    <h2>Add New Student</h2>
+
+    @if (errorMessages.length > 0){
+      <div class="error-messages">
+        @for (error of errorMessages ; track error){
+          <div class="error-message">
+            {{ error }}
+          </div>
+        }
+      </div>
+    }
+
+    <!--old syntax -->
+<!--    -->
+<!--    <div *ngIf="errorMessages.length" class="error-messages">-->
+<!--      <div *ngFor="let error of errorMessages" class="error-message">-->
+<!--        {{ error }}-->
+<!--      </div>-->
+<!--    </div>-->
+
+    <div class="form-group">
+      <label for="id">Student ID</label>
+      <input
+        required
+        type="number"
+        id="id"
+        name="id"
+        formControlName="id"
+        placeholder="Enter student ID"
+        class="form-control"
+        min="1"
+      />
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label for="firstname">First Name</label>
+        <input
+          type="text"
+          id="firstname"
+          name="firstname"
+          formControlName="firstname"
+          placeholder="Enter first name"
+          class="form-control"
+          required
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="lastname">Last Name</label>
+        <input
+          type="text"
+          id="lastname"
+          name="lastname"
+          formControlName="lastname"
+          placeholder="Enter last name"
+          class="form-control"
+          required
+        />
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label for="mark">Mark</label>
+        <input
+          type="number"
+          id="mark"
+          name="mark"
+          formControlName="mark"
+          placeholder="Enter mark"
+          class="form-control"
+          min="0"
+          max="20"
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="birthdate">Date of Birth</label>
+        <input
+          type="date"
+          id="birthdate"
+          name="birthdate"
+          formControlName="birthdate"
+          class="form-control"
+          required
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="filiere">Filiere</label>
+        <input
+          type="text"
+          id="filiere"
+          name="filiere"
+          formControlName="filiere"
+          class="form-control"
+          required
+        />
+      </div>
+
+    </div>
+
+    <div class="form-actions">
+      <button class="btn-add" type="submit">
+        <span class="btn-icon">+</span>
+        Add Student
+      </button>
+    </div>
+  </div>
+</form>

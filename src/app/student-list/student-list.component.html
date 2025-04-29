@@ -1,0 +1,89 @@
+<div class="student-management">
+  <div class="header">
+    <h1>Student Management System</h1>
+    <p class="subtitle">Manage your class roster efficiently</p>
+  </div>
+
+  <div class="content-container">
+    <div class="student-form-container">
+      <app-add-student (addStudent)="addStudent($event)"></app-add-student>
+    </div>
+
+    <div class="student-list-container">
+      <h2>Student Roster</h2>
+
+      @if (students.length === 0) {
+        <div class="empty-state">
+          <p>No students added yet. Add your first student using the form.</p>
+        </div>
+      } @else {
+        <div class="table-responsive">
+          <table class="student-table">
+            <thead>
+            <tr>
+              <th>ID</th>
+              <th>Name</th>
+              <th>Date of Birth</th>
+              <th>Mark</th>
+              <th>Filiere</th>
+              <th>Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+              @for (student of paginate(); track student.id) {
+                <tr>
+                  <td>{{student.id}}</td>
+                  <td>
+                    @if (editingStudent?.id === student.id && editingStudent) {
+                      <input [(ngModel)]="editingStudent.firstName" placeholder="First Name">
+                      <input [(ngModel)]="editingStudent.lastName" placeholder="Last Name">
+                    } @else {
+                      {{student.firstName}} {{student.lastName}}
+                    }
+                  </td>
+                  <td>
+                    @if (editingStudent?.id === student.id && editingStudent) {
+                      <input [(ngModel)]="editingStudent.birthDate" type="date">
+                    } @else {
+                      {{student.birthDate}}
+                    }
+                  </td>
+                  <td class="mark-cell">
+                    @if (editingStudent?.id === student.id && editingStudent) {
+                      <input [(ngModel)]="editingStudent.mark" type="number">
+                    } @else {
+                      {{student.mark}}
+                    }
+                  </td>
+                  <td>
+                    @if (editingStudent?.id === student.id && editingStudent) {
+                      <input [(ngModel)]="editingStudent.filiere" placeholder="Filiere">
+                    } @else {
+                      {{student.filiere}}
+                    }
+                  </td>
+                  <td>
+                    @if (editingStudent?.id === student.id) {
+                      <button (click)="saveEdit()" class="btn btn-success btn-sm">Save</button>
+                      <button (click)="cancelEdit()" class="btn btn-secondary btn-sm">Cancel</button>
+                    } @else {
+                      <button (click)="editStudent(student)" class="btn btn-primary btn-sm">Edit</button>
+                      <button (click)="deleteStudent(student.id)" class="btn btn-danger btn-sm">Delete</button>
+                    }
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+          <!-- Simple Pagination Controls -->
+        <div class="pagination">
+          <button (click)="previousPage()" [disabled]="currentPage === 1" class="btn btn-primary btn-sm">Previous</button>
+          <button (click)="nextPage()" [disabled]="students.length <= currentPage * pageSize" class="btn btn-primary btn-sm">Next</button>
+        </div>
+      }
+    </div>
+  </div>
+
+  <router-outlet></router-outlet>
+</div>
