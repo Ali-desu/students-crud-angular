@@ -10,5 +10,9 @@ export const routes: Routes = [
   {
     path: 'add-student',
     component: AddStudentComponent,
+  },
+  {
+    path: '**',
+    redirectTo: ''
   }
 ];

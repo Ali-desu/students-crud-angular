@@ -5,4 +5,5 @@ export interface Student {
     mark: number;
     birthDate: Date;
     filiere: string;
+    email: string;
 }

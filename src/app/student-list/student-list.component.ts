@@ -1,22 +1,25 @@
 import {Component, inject} from '@angular/core';
 import {RouterOutlet} from '@angular/router';
-import {AddStudentComponent} from '../add-student/add-student.component';
 import {StudentService} from '../service/student.service';
 import {Student} from '../model/student.model';
 import {FormsModule} from '@angular/forms';
+import {DatePipe} from '@angular/common';
+import {NavbarComponent} from '../navbar/navbar.component';
 
 @Component({
   selector: 'app-student',
   imports: [
     RouterOutlet,
-    AddStudentComponent,
-    FormsModule
+    FormsModule,
+    DatePipe,
+    NavbarComponent
   ],
   templateUrl: './student-list.component.html',
   styleUrl: './student-list.component.css'
 })
 export class StudentListComponent {
   studentService = inject(StudentService);
+
   students: Student[] = this.studentService.getStudents();
   editingStudent: Student | null = null;
   currentPage: number = 1;

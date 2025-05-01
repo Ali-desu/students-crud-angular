@@ -1,3 +1,4 @@
+<app-navbar/>
 <form [formGroup]="studentForm" (ngSubmit)="sendStudent()" >
   <div class="add-student-form">
     <h2>Add New Student</h2>
@@ -62,6 +63,21 @@
       </div>
     </div>
 
+  <div class="form-row">
+    <div class="form-group">
+      <label for="email">Email</label>
+      <input
+        type="email"
+        id="email"
+        name="email"
+        formControlName="email"
+        placeholder="Enter email"
+        class="form-control"
+        required
+      />
+    </div>
+  </div>
+
     <div class="form-row">
       <div class="form-group">
         <label for="mark">Mark</label>
@@ -73,7 +89,7 @@
           placeholder="Enter mark"
           class="form-control"
           min="0"
-          max="20"
+          max="100"
         />
       </div>
 

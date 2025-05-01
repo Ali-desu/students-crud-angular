@@ -1,3 +1,4 @@
+<app-navbar/>
 <div class="student-management">
   <div class="header">
     <h1>Student Management System</h1>
@@ -5,9 +6,6 @@
   </div>
 
   <div class="content-container">
-    <div class="student-form-container">
-      <app-add-student (addStudent)="addStudent($event)"></app-add-student>
-    </div>
 
     <div class="student-list-container">
       <h2>Student Roster</h2>
@@ -45,7 +43,7 @@
                     @if (editingStudent?.id === student.id && editingStudent) {
                       <input [(ngModel)]="editingStudent.birthDate" type="date">
                     } @else {
-                      {{student.birthDate}}
+                      {{student.birthDate | date:'mediumDate'}}
                     }
                   </td>
                   <td class="mark-cell">
@@ -84,6 +82,6 @@
       }
     </div>
   </div>
-
-  <router-outlet></router-outlet>
 </div>
+  <router-outlet></router-outlet>
+

@@ -1,26 +1,49 @@
-import { Injectable } from '@angular/core';
+import {inject, Injectable} from '@angular/core';
 import { Student } from '../model/student.model';
+import {HttpClient} from '@angular/common/http';
 
 @Injectable({
   providedIn: 'root'
 })
 export class StudentService {
-  Students: Student[] = [];
+  private Students: Student[] = [];
+  private http = inject(HttpClient)
+  private readonly STORAGE_KEY = 'students';
 
   constructor() {
-    // Initialize with mock data, using Date objects for birthDate
-    this.Students = [
-      { id: 1, firstName: 'John', lastName: 'Doe', birthDate: new Date('2000-01-15'), mark: 85, filiere: 'Computer Science' },
-      { id: 2, firstName: 'Jane', lastName: 'Smith', birthDate: new Date('1999-05-22'), mark: 90, filiere: 'Mathematics' },
-      { id: 3, firstName: 'Alice', lastName: 'Johnson', birthDate: new Date('2001-03-10'), mark: 78, filiere: 'Physics' },
-      { id: 4, firstName: 'Bob', lastName: 'Williams', birthDate: new Date('2000-07-30'), mark: 92, filiere: 'Engineering' },
-      { id: 5, firstName: 'Emma', lastName: 'Brown', birthDate: new Date('1998-11-05'), mark: 88, filiere: 'Biology' },
-      { id: 6, firstName: 'Michael', lastName: 'Davis', birthDate: new Date('2000-09-12'), mark: 95, filiere: 'Computer Science' },
-      { id: 7, firstName: 'Sarah', lastName: 'Wilson', birthDate: new Date('1999-02-28'), mark: 80, filiere: 'Chemistry' },
-      { id: 8, firstName: 'David', lastName: 'Taylor', birthDate: new Date('2001-06-18'), mark: 87, filiere: 'Mathematics' },
-      { id: 9, firstName: 'Laura', lastName: 'Martinez', birthDate: new Date('2000-04-25'), mark: 83, filiere: 'Engineering' },
-      { id: 10, firstName: 'James', lastName: 'Anderson', birthDate: new Date('1999-12-01'), mark: 91, filiere: 'Physics' }
-    ];
+    // Load students from localStorage or initialize with mock data
+    this.loadStudents();
+    if (this.Students.length === 0) {
+      this.Students = [];
+      this.saveStudents();
+    }
+
+    //testing the http
+    this.http.get('http://localhost:9090/spring_tuto_web_war_exploded/api/students').subscribe({
+      next: (response) => {
+        console.log("fetched from the backend : " + response);
+      },
+      error: (error) => {
+        console.error('Error fetching data:', error);
+      }
+    });
+  }
+
+  private loadStudents(): void {
+    const storedStudents = localStorage.getItem(this.STORAGE_KEY);
+    if (storedStudents) {
+      const parsedStudents = JSON.parse(storedStudents);
+      // Convert birthDate strings back to Date objects
+      this.Students = parsedStudents.map((student: any) => ({
+        ...student,
+        birthDate: new Date(student.birthDate)
+      }));
+    }
+  }
+
+  private saveStudents(): void {
+    // Save students to localStorage
+    localStorage.setItem(this.STORAGE_KEY, JSON.stringify(this.Students));
   }
 
   getStudents(): Student[] {
@@ -31,6 +54,7 @@ export class StudentService {
     const index = this.Students.findIndex(s => s.id === student.id);
     if (index === -1) {
       this.Students.push(student);
+      this.saveStudents();
     } else {
       alert(`Student ${student.id} already exists`);
     }
@@ -40,6 +64,7 @@ export class StudentService {
     const index = this.Students.findIndex(student => student.id === id);
     if (index !== -1) {
       this.Students.splice(index, 1);
+      this.saveStudents();
     }
   }
 
@@ -47,6 +72,7 @@ export class StudentService {
     const index = this.Students.findIndex(student => student.id === updatedStudent.id);
     if (index !== -1) {
       this.Students[index] = updatedStudent;
+      this.saveStudents();
     }
   }
 }
