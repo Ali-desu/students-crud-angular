@@ -1,9 +1,7 @@
 export interface Student {
     id: number;
-    firstName: string;
-    lastName: string;
-    mark: number;
-    birthDate: Date;
-    filiere: string;
+    name: string;
     email: string;
+    major: string;
+    mark: number;
 }

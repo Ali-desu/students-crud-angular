@@ -1,78 +1,29 @@
-import {inject, Injectable} from '@angular/core';
+import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
 import { Student } from '../model/student.model';
-import {HttpClient} from '@angular/common/http';
 
 @Injectable({
   providedIn: 'root'
 })
 export class StudentService {
-  private Students: Student[] = [];
-  private http = inject(HttpClient)
-  private readonly STORAGE_KEY = 'students';
+  private apiUrl = 'http://localhost:9090/spring_tuto_web_war_exploded/api/students'; // Adjust based on your Spring Boot server
 
-  constructor() {
-    // Load students from localStorage or initialize with mock data
-    this.loadStudents();
-    if (this.Students.length === 0) {
-      this.Students = [];
-      this.saveStudents();
-    }
+  constructor(private http: HttpClient) {}
 
-    //testing the http
-    this.http.get('http://localhost:9090/spring_tuto_web_war_exploded/api/students').subscribe({
-      next: (response) => {
-        console.log("fetched from the backend : " + response);
-      },
-      error: (error) => {
-        console.error('Error fetching data:', error);
-      }
-    });
+  getStudents(): Observable<Student[]> {
+    return this.http.get<Student[]>(this.apiUrl);
   }
 
-  private loadStudents(): void {
-    const storedStudents = localStorage.getItem(this.STORAGE_KEY);
-    if (storedStudents) {
-      const parsedStudents = JSON.parse(storedStudents);
-      // Convert birthDate strings back to Date objects
-      this.Students = parsedStudents.map((student: any) => ({
-        ...student,
-        birthDate: new Date(student.birthDate)
-      }));
-    }
+  addStudent(student: Student): Observable<Student> {
+    return this.http.post<Student>(this.apiUrl, student);
   }
 
-  private saveStudents(): void {
-    // Save students to localStorage
-    localStorage.setItem(this.STORAGE_KEY, JSON.stringify(this.Students));
+  updateStudent(student: Student): Observable<any> {
+    return this.http.put(`${this.apiUrl}/${student.id}`, student);
   }
 
-  getStudents(): Student[] {
-    return this.Students;
-  }
-
-  addStudent(student: Student): void {
-    const index = this.Students.findIndex(s => s.id === student.id);
-    if (index === -1) {
-      this.Students.push(student);
-      this.saveStudents();
-    } else {
-      alert(`Student ${student.id} already exists`);
-    }
-  }
-
-  deleteStudent(id: number): void {
-    const index = this.Students.findIndex(student => student.id === id);
-    if (index !== -1) {
-      this.Students.splice(index, 1);
-      this.saveStudents();
-    }
-  }
-
-  updateStudent(updatedStudent: Student): void {
-    const index = this.Students.findIndex(student => student.id === updatedStudent.id);
-    if (index !== -1) {
-      this.Students[index] = updatedStudent;
-      this.saveStudents();
-    }
+  deleteStudent(id: number): Observable<any> {
+    return this.http.delete(`${this.apiUrl}/${id}`);
   }
 }

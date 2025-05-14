@@ -6,13 +6,13 @@
   </div>
 
   <div class="content-container">
-
+    <!-- Student List -->
     <div class="student-list-container">
       <h2>Student Roster</h2>
 
       @if (students.length === 0) {
         <div class="empty-state">
-          <p>No students added yet. Add your first student using the form.</p>
+          <p>No students added yet. Add your first student using the form above.</p>
         </div>
       } @else {
         <div class="table-responsive">
@@ -21,43 +21,42 @@
             <tr>
               <th>ID</th>
               <th>Name</th>
-              <th>Date of Birth</th>
               <th>Mark</th>
-              <th>Filiere</th>
+              <th>Major</th>
+              <th>Email</th>
               <th>Actions</th>
             </tr>
             </thead>
             <tbody>
               @for (student of paginate(); track student.id) {
                 <tr>
-                  <td>{{student.id}}</td>
+                  <td>{{ student.id }}</td>
                   <td>
                     @if (editingStudent?.id === student.id && editingStudent) {
-                      <input [(ngModel)]="editingStudent.firstName" placeholder="First Name">
-                      <input [(ngModel)]="editingStudent.lastName" placeholder="Last Name">
+                      <input [(ngModel)]="editingStudent.name" placeholder="Enter name" required>
                     } @else {
-                      {{student.firstName}} {{student.lastName}}
-                    }
-                  </td>
-                  <td>
-                    @if (editingStudent?.id === student.id && editingStudent) {
-                      <input [(ngModel)]="editingStudent.birthDate" type="date">
-                    } @else {
-                      {{student.birthDate | date:'mediumDate'}}
+                      {{ student.name }}
                     }
                   </td>
                   <td class="mark-cell">
                     @if (editingStudent?.id === student.id && editingStudent) {
-                      <input [(ngModel)]="editingStudent.mark" type="number">
+                      <input [(ngModel)]="editingStudent.mark" type="number" min="0" max="100" required>
                     } @else {
-                      {{student.mark}}
+                      {{ student.mark }}
                     }
                   </td>
                   <td>
                     @if (editingStudent?.id === student.id && editingStudent) {
-                      <input [(ngModel)]="editingStudent.filiere" placeholder="Filiere">
+                      <input [(ngModel)]="editingStudent.major" placeholder="Enter major" required>
                     } @else {
-                      {{student.filiere}}
+                      {{ student.major }}
+                    }
+                  </td>
+                  <td>
+                    @if (editingStudent?.id === student.id && editingStudent) {
+                      <input [(ngModel)]="editingStudent.email" type="email" required>
+                    } @else {
+                      {{ student.email }}
                     }
                   </td>
                   <td>
@@ -74,14 +73,14 @@
             </tbody>
           </table>
         </div>
-          <!-- Simple Pagination Controls -->
+        <!-- Pagination Controls -->
         <div class="pagination">
           <button (click)="previousPage()" [disabled]="currentPage === 1" class="btn btn-primary btn-sm">Previous</button>
+          <span>Page {{ currentPage }}</span>
           <button (click)="nextPage()" [disabled]="students.length <= currentPage * pageSize" class="btn btn-primary btn-sm">Next</button>
         </div>
       }
     </div>
   </div>
 </div>
-  <router-outlet></router-outlet>
-
+<router-outlet></router-outlet>

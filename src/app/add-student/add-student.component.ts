@@ -1,10 +1,8 @@
 import { Component, inject } from '@angular/core';
-import { ReactiveFormsModule, FormControl, FormGroup, FormsModule, Validators, ValidatorFn, AbstractControl } from '@angular/forms';
+import { ReactiveFormsModule, FormControl, FormGroup, FormsModule, Validators } from '@angular/forms';
 import { Student } from '../model/student.model';
 import { StudentService } from '../service/student.service';
 import { NavbarComponent } from '../navbar/navbar.component';
-
-// Custom validator for positive numbers
 
 @Component({
   selector: 'app-add-student',
@@ -14,7 +12,8 @@ import { NavbarComponent } from '../navbar/navbar.component';
     FormsModule,
     NavbarComponent
   ],
-  styleUrls: ['./add-student.component.css']
+  styleUrls: ['./add-student.component.css'],
+  standalone: true
 })
 export class AddStudentComponent {
   studentService = inject(StudentService);
@@ -24,11 +23,7 @@ export class AddStudentComponent {
       Validators.required,
       Validators.min(0)
     ]),
-    firstname: new FormControl<string>('', [
-      Validators.required,
-      Validators.minLength(1)
-    ]),
-    lastname: new FormControl<string>('', [
+    name: new FormControl<string>('', [
       Validators.required,
       Validators.minLength(1)
     ]),
@@ -43,10 +38,7 @@ export class AddStudentComponent {
       Validators.minLength(5),
       Validators.maxLength(50)
     ]),
-    birthdate: new FormControl<Date>(new Date(), [
-      Validators.required
-    ]),
-    filiere: new FormControl<string>('', [
+    major: new FormControl<string>('', [
       Validators.required,
       Validators.minLength(1)
     ])
@@ -54,7 +46,7 @@ export class AddStudentComponent {
 
   errorMessages: string[] = [];
 
-  sendStudent(): void {
+    sendStudent(): void {
     this.errorMessages = []; // Clear previous errors
 
     if (!this.studentForm.valid) {
@@ -64,25 +56,25 @@ export class AddStudentComponent {
 
     const student: Student = {
       id: this.studentForm.value.id!,
-      firstName: this.studentForm.value.firstname!.trim(),
-      lastName: this.studentForm.value.lastname!.trim(),
+      name: this.studentForm.value.name!.trim(),
       mark: this.studentForm.value.mark!,
-      email: this.studentForm.value.email!.trim(),
-      birthDate: this.studentForm.value.birthdate!,
-      filiere: this.studentForm.value.filiere!.trim()
+      major: this.studentForm.value.major!.trim(),
+      email: this.studentForm.value.email!.trim()
     };
 
-    this.studentService.addStudent(student);
-    console.log(this.studentService.getStudents());
-
-    // Reset the form with default values
-    this.studentForm.reset({
-      id: 0,
-      firstname: '',
-      lastname: '',
-      mark: 0,
-      birthdate: new Date(),
-      filiere: ''
+    this.studentService.addStudent(student).subscribe({
+      next: () => {
+        this.studentForm.reset({
+          id: 0,
+          name: '',
+          mark: 0,
+          email: '',
+          major: ''
+        });
+      },
+      error: (err) => {
+        this.errorMessages.push('Error adding student: ' + err.message);
+      }
     });
   }
 
@@ -91,14 +83,14 @@ export class AddStudentComponent {
 
     if (this.studentForm.get('id')?.hasError('required')) {
       this.errorMessages.push('ID is required.');
-    } else if (this.studentForm.get('id')?.hasError('positiveNumber')) {
+    } else if (this.studentForm.get('id')?.hasError('min')) {
       this.errorMessages.push('ID must be a positive number.');
     }
 
-    if (this.studentForm.get('firstname')?.hasError('required')) {
-      this.errorMessages.push('First name is required.');
+    if (this.studentForm.get('name')?.hasError('required')) {
+      this.errorMessages.push('Name is required.');
     }
-    //email
+
     if (this.studentForm.get('email')?.hasError('required')) {
       this.errorMessages.push('Email is required.');
     } else if (this.studentForm.get('email')?.hasError('email')) {
@@ -109,22 +101,14 @@ export class AddStudentComponent {
       this.errorMessages.push('Email must be at most 50 characters long.');
     }
 
-    if (this.studentForm.get('lastname')?.hasError('required')) {
-      this.errorMessages.push('Last name is required.');
-    }
-
     if (this.studentForm.get('mark')?.hasError('required')) {
       this.errorMessages.push('Mark is required.');
     } else if (this.studentForm.get('mark')?.hasError('min') || this.studentForm.get('mark')?.hasError('max')) {
       this.errorMessages.push('Mark must be between 0 and 100.');
     }
 
-    if (this.studentForm.get('birthdate')?.hasError('required')) {
-      this.errorMessages.push('Birth date is required.');
-    }
-
-    if (this.studentForm.get('filiere')?.hasError('required')) {
-      this.errorMessages.push('Filiere is required.');
+    if (this.studentForm.get('major')?.hasError('required')) {
+      this.errorMessages.push('Major is required.');
     }
   }
 }

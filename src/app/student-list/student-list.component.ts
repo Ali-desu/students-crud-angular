@@ -1,40 +1,47 @@
-import {Component, inject} from '@angular/core';
-import {RouterOutlet} from '@angular/router';
-import {StudentService} from '../service/student.service';
-import {Student} from '../model/student.model';
-import {FormsModule} from '@angular/forms';
-import {DatePipe} from '@angular/common';
-import {NavbarComponent} from '../navbar/navbar.component';
+import { Component, inject, OnInit } from '@angular/core';
+import { StudentService } from '../service/student.service';
+import { Student } from '../model/student.model';
+import { FormsModule } from '@angular/forms';
+import { DatePipe } from '@angular/common';
+import { NavbarComponent } from '../navbar/navbar.component';
+import { RouterOutlet } from '@angular/router';
+import { AddStudentComponent } from '../add-student/add-student.component';
 
 @Component({
   selector: 'app-student',
+  standalone: true,
   imports: [
     RouterOutlet,
     FormsModule,
     DatePipe,
-    NavbarComponent
+    NavbarComponent,
+    AddStudentComponent
   ],
   templateUrl: './student-list.component.html',
-  styleUrl: './student-list.component.css'
+  styleUrls: ['./student-list.component.css']
 })
-export class StudentListComponent {
+export class StudentListComponent implements OnInit {
   studentService = inject(StudentService);
-
-  students: Student[] = this.studentService.getStudents();
+  students: Student[] = [];
   editingStudent: Student | null = null;
   currentPage: number = 1;
   pageSize: number = 5;
 
-  paginate(){
+  ngOnInit() {
+    this.loadStudents();
+  }
+
+  loadStudents() {
+    this.studentService.getStudents().subscribe({
+      next: (students) => this.students = students,
+      error: (err) => console.error('Error fetching students:', err)
+    });
+  }
+
+  paginate() {
     const start = (this.currentPage - 1) * this.pageSize;
     const end = start + this.pageSize;
     return this.students.slice(start, end);
-  }
-
-  addStudent(student: Student) {
-    this.studentService.addStudent(student);
-    // Reset to first page if adding a new student
-    this.currentPage = 1;
   }
 
   editStudent(student: Student) {
@@ -43,8 +50,13 @@ export class StudentListComponent {
 
   saveEdit() {
     if (this.editingStudent) {
-      this.studentService.updateStudent(this.editingStudent);
-      this.editingStudent = null;
+      this.studentService.updateStudent(this.editingStudent).subscribe({
+        next: () => {
+          this.loadStudents(); // Refresh list
+          this.editingStudent = null;
+        },
+        error: (err) => console.error('Error updating student:', err)
+      });
     }
   }
 
@@ -54,7 +66,10 @@ export class StudentListComponent {
 
   deleteStudent(id: number) {
     if (confirm('Are you sure you want to delete this student?')) {
-      this.studentService.deleteStudent(id);
+      this.studentService.deleteStudent(id).subscribe({
+        next: () => this.loadStudents(), // Refresh list
+        error: (err) => console.error('Error deleting student:', err)
+      });
     }
   }
 
